@@ -1,4 +1,4 @@
-FROM r-base:latest
+FROM cjsegneri/phone-matcher
 
 MAINTAINER Connor Segneri "connorsegneri@gmail.com"
 
