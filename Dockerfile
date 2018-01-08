@@ -1,4 +1,4 @@
-FROM cjsegneri/phone-matcher
+FROM gcr.io/sad-suite/phone-matcher
 
 MAINTAINER Connor Segneri (connorsegneri@gmail.com)
 
