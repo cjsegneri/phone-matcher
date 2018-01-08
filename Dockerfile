@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 RUN install2.r --error \ 
     -r 'http://cran.rstudio.com' \
     ##### ADD YOUR CRAN PACKAGES
-    && Rscript -e "install.packages(c('shiny', 'rmarkdown', 'DT', 'shinyjs', 'shinythemes')" \
+    && Rscript -e "install.packages(c('shiny', 'rmarkdown', 'DT', 'shinyjs', 'shinythemes'))" \
     ## clean up
     && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
