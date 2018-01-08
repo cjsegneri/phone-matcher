@@ -1,21 +1,31 @@
 FROM cjsegneri/phone-matcher
 
-MAINTAINER Connor Segneri (connorsegneri@gmail.com)
+MAINTAINER Connor Segneri "connorsegneri@gmail.com
 
-# install R package dependencies
 RUN apt-get update && apt-get install -y \
-    ##### ADD YOUR DEPENDENCIES
-    ## clean up
-    && apt-get clean \ 
-    && rm -rf /var/lib/apt/lists/ \ 
-    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+    sudo \
+    gdebi-core \
+    pandoc \
+    pandoc-citeproc \
+    libcurl4-gnutls-dev \
+    libcairo2-dev/unstable \
+    libxt-dev \
+    libssl-dev
 
-RUN install2.r --error \ 
-    -r 'http://cran.rstudio.com' \
-    ##### ADD YOUR CRAN PACKAGES
-    && Rscript -e "install.packages(c('shiny', 'rmarkdown', 'DT', 'shinyjs', 'shinythemes'))" \
-    ## clean up
-    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+# Download and install shiny server
+RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-12.04/x86_64/VERSION -O "version.txt" && \
+    VERSION=$(cat version.txt)  && \
+    wget --no-verbose "https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-12.04/x86_64/shiny-server-$VERSION-amd64.deb" -O ss-latest.deb && \
+    gdebi -n ss-latest.deb && \
+    rm -f version.txt ss-latest.deb
 
-## assume shiny app is in build folder /shiny
-COPY ./myapp/ /srv/shiny-server/myapp/
+RUN R -e "install.packages(c('shiny', 'rmarkdown', 'tm', 'wordcloud', 'memoise'), repos='http://cran.rstudio.com/')"
+
+COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
+COPY /myapp /srv/shiny-server/
+
+EXPOSE 80
+
+COPY shiny-server.sh /usr/bin/shiny-server.sh
+
+CMD ["/usr/bin/shiny-server.sh"]
